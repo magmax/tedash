@@ -1,0 +1,10 @@
+{% spaceless %}
+{% if testcase.error %}
+text-bg-danger
+{% elif testcase.failure %}
+text-bg-warning
+{% elif testcase.skipped %}
+text-bg-secondary
+{% else %}
+text-bg-success
+{% endspaceless %}
