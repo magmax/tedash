@@ -16,6 +16,9 @@ pytest = "^7.4.2"
 pytest-django = "^4.5.2"
 factory-boy = "^3.3.0"
 Faker = "^19.6.2"
+black = "^23.9.1"
+bandit = "^1.7.5"
+flake8 = "^6.1.0"
 
 [build-system]
 requires = ["poetry-core"]
