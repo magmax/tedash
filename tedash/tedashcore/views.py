@@ -26,6 +26,7 @@ def report_junit_xml(request):
     metadata = importer.metadata
     models.Report.objects.create(
         project=project,
+        kind=models.Report.KIND_JUNIT,
         name=metadata["name"],
         tests=metadata["tests"],
         failures=metadata.get("failures"),
