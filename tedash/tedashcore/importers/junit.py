@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 import json
-import datetime
+
 
 # deprecated
 def xml_importer(f):
@@ -10,6 +10,7 @@ def xml_importer(f):
     result = xml_node_to_dict(root)
     metadata = result["testsuites"]["attr"]
     return metadata, json.dumps(result, indent=2)
+
 
 # deprecated
 def xml_node_to_dict(node):
@@ -21,7 +22,7 @@ def xml_node_to_dict(node):
     if node.text and (text := node.text.strip()):
         data["text"] = text
 
-    return { node.tag: data }
+    return {node.tag: data}
 
 
 class JunitImporter:
@@ -44,50 +45,63 @@ class JunitImporter:
 
     def _import_metadata(self, node):
         result = {
-            "name": node.attrib["name"],
-            "tests": int(node.attrib["tests"]),
-            "failures": int(node.attrib["failures"]),
-            "errors": int(node.attrib["errors"]),
-            "skipped": int(node.attrib["skipped"]),
-            "assertions": int(node.attrib["assertions"]),
-            "duration": float(node.attrib["time"]),
-            "timestamp": node.attrib["timestamp"],
+            "name": node.attrib.get("name", "unnamed"),
+            "tests": int(node.attrib.get("tests", 0)),
+            "failures": int(node.attrib.get("failures", 0)),
+            "errors": int(node.attrib.get("errors", 0)),
+            "skipped": int(node.attrib.get("skipped", 0)),
+            "assertions": int(
+                node.attrib.get("assertions", node.attrib.get("tests", 0))
+            ),
+            "duration": float(node.attrib.get("time", 0)),
+            "timestamp": node.attrib.get("timestamp"),
         }
         if "file" in node.attrib:
             result["file"] = node.attrib["file"]
         return result
 
     def _import_properties(self, node):
+        if node is None:
+            return {}
         result = {}
-        for prop in node:
+        for prop in node.findall("property"):
             result[prop.attrib["name"]] = prop.attrib.get("value", prop.text)
         return result
 
-
     def _import_testsuites(self):
-        result = []
-        for ts in self.root:
-            data = {
+        if self.root.tag == "testsuites":
+            result = []
+            for ts in self.root:
+                data = {
                     "metadata": self._import_metadata(ts),
-                    "properties" : self._import_properties(ts.find("properties")),
+                    "properties": self._import_properties(ts.find("properties")),
                     "testcases": self._import_testcases(ts),
+                }
+                for prop in ("system-out", "system-err"):
+                    if (sysout := ts.find(prop)) is not None:
+                        data[prop] = sysout.text
+                result.append(data)
+            return result
+        return [
+            {
+                "metadata": self._import_metadata(self.root),
+                "properties": self._import_properties(self.root),
+                "testcases": self._import_testcases(self.root),
             }
-            for prop in ("system-out", "system-err"):
-                if (sysout := ts.find(prop)) is not None:
-                    data[prop] = sysout.text
-            result.append(data)
-        return result
+        ]
 
     def _import_testcases(self, node):
         result = []
         for tc in node.findall("testcase"):
             data = {
-                "name": tc.attrib["name"],
-                "classname": tc.attrib["classname"],
-                "assertions": int(tc.attrib["assertions"]),
-                "duration": float(tc.attrib["time"]),
-                "file": tc.attrib["file"],
-                "line": int(tc.attrib["line"]),
+                "name": tc.attrib.get("name", "unnamed"),
+                "classname": tc.attrib.get("classname", "unknown"),
+                "assertions": int(x)
+                if (x := tc.attrib.get("assertions")) is not None
+                else 0,
+                "duration": float(tc.attrib.get("time", 0)),
+                "file": tc.attrib.get("file"),
+                "line": int(x) if (x := tc.attrib.get("line")) is not None else 0,
             }
 
             for key in ("skipped", "failure", "error"):

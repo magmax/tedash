@@ -34,7 +34,9 @@ def report_junit_xml(request):
         skipped=metadata.get("skipped"),
         assertions=metadata.get("assertions"),
         time=datetime.timedelta(seconds=metadata.get("duration", 0)),
-        created=datetime.datetime.fromisoformat(metadata.get("timestamp")),
+        created=datetime.datetime.fromisoformat(ts)
+        if (ts := metadata.get("timestamp")) is not None
+        else datetime.datetime.now(),
         report=importer.data,
     )
 

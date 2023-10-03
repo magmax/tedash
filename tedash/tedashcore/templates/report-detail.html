@@ -10,15 +10,6 @@
           <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="#TS-{{ testsuite.metadata.name | slugify }}">
             Suite "{{ testsuite.metadata.name }}"
         </a>
-        <ul class="nav flex-column">
-          {%   for testcase in testsuite.testcases %}
-          <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="#TC-{{ testcase.name | slugify }}">
-                Case "{{ testcase.name }}"
-            </a>
-          </li>
-          {%   endfor %}
-      </ul>
       {% endfor %}
     </ul>
   </div>
@@ -101,41 +92,69 @@
     <hr/>
     <h4> Testcases </h4>
     {%   for testcase in testsuite.testcases %}
-    <br/>
-    <div class="card {{ testcase | card_class }}" id="TC-{{ testcase.name | slugify }}">
-      <div class="card-header">
-          {{ testcase | testcase_header }}
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">{{ testcase.name }}</h5>
-        <div class="container">
-            <table class="table table-info table-sm table-hover" style="width: 50%">
-                <tbody>
-                    <tr>
-                        <th>Class</th>
-                        <td>{{ testcase.classname }}</td>
-                    </tr>
-                    <tr>
-                        <th>File</th>
-                        <td>{{ testcase.file }}</td>
-                    </tr>
-                    <tr>
-                        <th>Line</th>
-                        <td>{{ testcase.line }}</td>
-                    </tr>
-                    <tr>
-                        <th>Assertions</th>
-                        <td>{{ testcase.assertions }}</td>
-                    </tr>
-                    <tr>
-                        <th>Duration</th>
-                        <td>{{ testcase.duration }}</td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="accordion" id="accordion-tc-{{ testcase.name | slugify }}">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed {{ testcase | card_class }}" type="button" data-bs-toggle="collapse" data-bs-target="#accordion-tc-collapse-{{ testcase.name | slugify }}" aria-expanded="false" aria-controls="accordion-tc-collapse-{{ testcase.name | slugify }}">
+                <div class="row" style="width:100%">
+                    <div class="col-5">
+                        <b>{{ testcase.name }}</b>
+                    </div>
+                    <div class="col-6">
+                        <small><i>{{ testcase | testcase_header }}</i></small>
+                    </div>
+                    <div class="col-1">
+                        <small>{{ testcase.duration }}s</small>
+                    </div>
+                </div>
+          </button>
+        </h2>
+        <div id="accordion-tc-collapse-{{ testcase.name | slugify }}" class="accordion-collapse collapse">
+          <div class="accordion-body">
+            <div class="container">
+              <table class="table table-info table-sm table-hover" style="width: 50%">
+                  <tbody>
+                      <tr>
+                          <th>Class</th>
+                          <td>{{ testcase.classname }}</td>
+                      </tr>
+                      <tr>
+                          <th>File</th>
+                          <td>{{ testcase.file }}</td>
+                      </tr>
+                      <tr>
+                          <th>Line</th>
+                          <td>{{ testcase.line }}</td>
+                      </tr>
+                      <tr>
+                          <th>Assertions</th>
+                          <td>{{ testcase.assertions }}</td>
+                      </tr>
+                      <tr>
+                          <th>Duration</th>
+                          <td>{{ testcase.duration }}</td>
+                      </tr>
+                  </tbody>
+              </table>
+              {% if testcase.error_description %}
+              <h3>Error</h3>
+              <pre class="text-bg-warning">{{ testcase.error_description }}</pre>
+              {% endif %}
+              {% if testcase.failure_description %}
+              <h3>Failure</h3>
+              <pre class="text-bg-warning">{{ testcase.failure_description }}</pre>
+              {% endif %}
+              {% if testcase.stderr %}
+              <h3>Stderr</h3>
+              <pre class="text-bg-warning">{{ testcase.stderr }}</pre>
+              {% endif %}
+              {% if testcase.stdout %}
+              <h3>Stdout</h3>
+              <pre class="text-bg-info">{{ testcase.stdout }}</pre>
+              {% endif %}
+            </div>
+          </div>
         </div>
-
-        <p class="card-text"></p>
       </div>
     </div>
     {%   endfor %}
