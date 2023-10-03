@@ -1,33 +1,25 @@
-{% extends "base.html" %} {% load junit %} {% block content %}
+{% extends "base.html" %}
+{% load junit %}
+
+{% block content %}
 <div class="row">
-  <div
-    class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary"
-  >
+  <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
     <ul class="nav flex-column">
       {% for testsuite in report.report.testsuites %}
       <li class="nav-item">
-        <a
-          class="nav-link d-flex align-items-center gap-2 active"
-          aria-current="page"
-          href="#TS-{{ testsuite.metadata.name | slugify }}"
-        >
-          Suite "{{ testsuite.metadata.name }}"
+          <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="#TS-{{ testsuite.metadata.name | slugify }}">
+            Suite "{{ testsuite.metadata.name }}"
         </a>
         <ul class="nav flex-column">
-          {% for testcase in testsuite.testcases %}
+          {%   for testcase in testsuite.testcases %}
           <li class="nav-item">
-            <a
-              class="nav-link d-flex align-items-center gap-2 active"
-              aria-current="page"
-              href="#TC-{{ testcase.name | slugify }}"
-            >
-              Case "{{ testcase.name }}"
+              <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="#TC-{{ testcase.name | slugify }}">
+                Case "{{ testcase.name }}"
             </a>
           </li>
-          {% endfor %}
-        </ul>
-        {% endfor %}
-      </li>
+          {%   endfor %}
+      </ul>
+      {% endfor %}
     </ul>
   </div>
   <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -35,124 +27,119 @@
 
     <p>{{ report.project.description }}</p>
 
-    <h2>Report "{{ report.name }}"</h2>
+    <h2> Report "{{ report.name }}" </h2>
 
     <div class="container">
       <table class="table" style="width: 80%">
-        <thead>
-          <tr>
-            <th>Created</th>
-            <th>Tests</th>
-            <th>Failures</th>
-            <th>Errors</th>
-            <th>Skipped</th>
-            <th>Assertions</th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ report.created }}</td>
-            <td>{{ report.tests }}</td>
-            <td>{{ report.failures }}</td>
-            <td>{{ report.errors }}</td>
-            <td>{{ report.skipped }}</td>
-            <td>{{ report.assertions }}</td>
-            <td>{{ report.time }}</td>
-          </tr>
-        </tbody>
+          <thead>
+              <tr>
+                  <th>Created</th>
+                  <th>Tests</th>
+                  <th>Failures</th>
+                  <th>Errors</th>
+                  <th>Skipped</th>
+                  <th>Assertions</th>
+                  <th>Duration</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>{{ report.created }}</td>
+                  <td>{{ report.tests }}</td>
+                  <td>{{ report.failures }}</td>
+                  <td>{{ report.errors }}</td>
+                  <td>{{ report.skipped }}</td>
+                  <td>{{ report.assertions }}</td>
+                  <td>{{ report.time }}</td>
+              </tr>
+          </tbody>
       </table>
     </div>
 
     {% for testsuite in report.report.testsuites %}
-    <h3 id="TS-{{ suite.metadata.name | slugify }}">
-      Testsuite "{{ testsuite.metadata.name }}"
-    </h3>
+    <h3 id="TS-{{ suite.metadata.name | slugify }}">Testsuite "{{ testsuite.metadata.name }}"</h3>
     <div class="container">
       <table class="table" style="width: 80%">
-        <thead>
-          <tr>
-            <th>Created</th>
-            <th>Tests</th>
-            <th>Failures</th>
-            <th>Errors</th>
-            <th>Skipped</th>
-            <th>Assertions</th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ testsuite.metadata.timestamp }}</td>
-            <td>{{ testsuite.metadata.tests }}</td>
-            <td>{{ testsuite.metadata.failures }}</td>
-            <td>{{ testsuite.metadata.errors }}</td>
-            <td>{{ testsuite.metadata.skipped }}</td>
-            <td>{{ testsuite.metadata.assertions }}</td>
-            <td>{{ testsuite.metadata.duration}}</td>
-          </tr>
-        </tbody>
+          <thead>
+              <tr>
+                  <th>Created</th>
+                  <th>Tests</th>
+                  <th>Failures</th>
+                  <th>Errors</th>
+                  <th>Skipped</th>
+                  <th>Assertions</th>
+                  <th>Duration</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>{{ testsuite.metadata.timestamp }}</td>
+                  <td>{{ testsuite.metadata.tests }}</td>
+                  <td>{{ testsuite.metadata.failures }}</td>
+                  <td>{{ testsuite.metadata.errors }}</td>
+                  <td>{{ testsuite.metadata.skipped }}</td>
+                  <td>{{ testsuite.metadata.assertions }}</td>
+                  <td>{{ testsuite.metadata.duration}}</td>
+              </tr>
+          </tbody>
       </table>
     </div>
     <h4>Properties</h4>
     <div class="container">
       <table class="table table-info table-sm" style="width: 50%">
-        <tbody>
-          {% for k, v in testsuite.properties.items %}
-          <tr>
-            <th>{{ k }}</th>
-            <td>{{ v.strip |linebreaks }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
+          <tbody>
+              {%   for k, v in testsuite.properties.items %}
+              <tr>
+                  <th>{{ k }}</th>
+                  <td>{{ v.strip |linebreaks }}</td>
+              </tr>
+              {%   endfor %}
+          </tbody>
       </table>
     </div>
 
-    <hr />
-    <h4>Testcases</h4>
-    {% for testcase in testsuite.testcases %}
-    <br />
-    <div
-      class="card {{ testcase | card_class }}"
-      id="TC-{{ testcase.name | slugify }}"
-    >
-      <div class="card-header">{{ testcase | testcase_header }}</div>
+    <hr/>
+    <h4> Testcases </h4>
+    {%   for testcase in testsuite.testcases %}
+    <br/>
+    <div class="card {{ testcase | card_class }}" id="TC-{{ testcase.name | slugify }}">
+      <div class="card-header">
+          {{ testcase | testcase_header }}
+      </div>
       <div class="card-body">
         <h5 class="card-title">{{ testcase.name }}</h5>
         <div class="container">
-          <table
-            class="table table-info table-sm table-hover"
-            style="width: 50%"
-          >
-            <tbody>
-              <tr>
-                <th>Class</th>
-                <td>{{ testcase.classname }}</td>
-              </tr>
-              <tr>
-                <th>File</th>
-                <td>{{ testcase.file }}</td>
-              </tr>
-              <tr>
-                <th>Line</th>
-                <td>{{ testcase.line }}</td>
-              </tr>
-              <tr>
-                <th>Assertions</th>
-                <td>{{ testcase.assertions }}</td>
-              </tr>
-              <tr>
-                <th>Duration</th>
-                <td>{{ testcase.duration }}</td>
-              </tr>
-            </tbody>
-          </table>
+            <table class="table table-info table-sm table-hover" style="width: 50%">
+                <tbody>
+                    <tr>
+                        <th>Class</th>
+                        <td>{{ testcase.classname }}</td>
+                    </tr>
+                    <tr>
+                        <th>File</th>
+                        <td>{{ testcase.file }}</td>
+                    </tr>
+                    <tr>
+                        <th>Line</th>
+                        <td>{{ testcase.line }}</td>
+                    </tr>
+                    <tr>
+                        <th>Assertions</th>
+                        <td>{{ testcase.assertions }}</td>
+                    </tr>
+                    <tr>
+                        <th>Duration</th>
+                        <td>{{ testcase.duration }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <p class="card-text"></p>
       </div>
     </div>
-    {% endfor %} {% endfor %}
+    {%   endfor %}
+    {% endfor %}
   </main>
 </div>
 {% endblock %}

@@ -21,7 +21,3 @@ repos:
         language: system
         types: [python]
         require_serial: true
-  - repo: https://github.com/prettier/pre-commit
-    rev: v2.1.2
-    hooks:
-      - id: prettier
